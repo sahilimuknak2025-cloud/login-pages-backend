@@ -25,18 +25,35 @@ export class AuthService {
         return newUser.save();
     }
 
+
      async login(email: string, password: string) {
     const user = await this.authModel.findOne({ email }).exec();
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
     if (user.password !== password) {
       throw new UnauthorizedException('Password  is incorrect');
     }
-
     return { message: 'User Login Successfully', user };
+  }
+
+
+  async getAllUsers(): Promise<Auth[]> {
+    return this.authModel.find().exec();
+  }
+
+
+  async updateUser(id: string, data: Partial<Auth>): Promise<Auth> {
+    const updatedUser = await this.authModel.findByIdAndUpdate(id, data, { new: true }).exec();
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+    return updatedUser;
+  }
+
+  async deleteUser(id: string): Promise<any>{
+    return this.authModel.findByIdAndDelete(id).exec();
   }
 }
 
